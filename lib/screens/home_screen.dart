@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scoore/models/match_highlights.dart';
 import 'package:scoore/utils/league_tiles.dart';
 import 'package:scoore/utils/nav_bar.dart';
+import 'package:scoore/utils/live_scores_section.dart';
 import 'package:scoore/utils/upcoming_sections.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -78,6 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 24),
               Column(
                 children: [
+                  const SizedBox(height: 24),
+                  const LiveScoresSection(),
                   Padding(
                     padding: const EdgeInsets.only(left: 23.0, top: 24),
                     child: Row(
