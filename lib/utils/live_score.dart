@@ -3,7 +3,12 @@ import '../models/live_match.dart';
 
 class LiveScoreCard extends StatelessWidget {
   final LiveMatch match;
-  const LiveScoreCard({super.key, required this.match});
+  final String leagueName;
+  const LiveScoreCard({
+    super.key,
+    required this.match,
+    required this.leagueName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,26 +21,33 @@ class LiveScoreCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // LIVE badge
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: match.finished ? Colors.grey[800] : Colors.red,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              match.finished ? 'FT' : 'LIVE ${match.liveTime}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                leagueName,
+                style: const TextStyle(color: Colors.white54, fontSize: 11),
               ),
-            ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: match.finished ? Colors.grey[800] : Colors.red,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  match.finished ? 'FT' : 'LIVE ${match.liveTime}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
 
           const SizedBox(height: 12),
 
-          // Teams + score
           Row(
             children: [
               Expanded(

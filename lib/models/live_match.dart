@@ -1,5 +1,6 @@
 class LiveMatch {
   final int id;
+  final int? leagueId;
   final String homeName;
   final int homeScore;
   final String awayName;
@@ -10,6 +11,7 @@ class LiveMatch {
 
   LiveMatch({
     required this.id,
+    required this.leagueId,
     required this.homeName,
     required this.homeScore,
     required this.awayName,
@@ -24,6 +26,7 @@ class LiveMatch {
 
     return LiveMatch(
       id: json['id'],
+      leagueId: json['leagueId'] as int?,
       homeName: json['home']['name'],
       homeScore: json['home']['score'],
       awayName: json['away']['name'],
