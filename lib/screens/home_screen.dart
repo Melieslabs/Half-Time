@@ -81,22 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   const SizedBox(height: 24),
                   const LiveScoresSection(),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 23.0, top: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Upcomings',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   const SizedBox(height: 16),
                   UpcomingsSection(),
                   const SizedBox(height: 24),

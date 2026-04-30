@@ -1,21 +1,25 @@
 class UpcomingMatch {
-  final String date;
-  final String time;
+  final int id;
+  final int? leagueId;
   final String homeName;
-  final String homeLogo;
   final String awayName;
-  final String awayLogo;
-  final String league;
-  final String stadium;
+  final String time;
 
   UpcomingMatch({
-    required this.date,
-    required this.time,
+    required this.id,
+    required this.leagueId,
     required this.homeName,
-    required this.homeLogo,
     required this.awayName,
-    required this.awayLogo,
-    required this.league,
-    required this.stadium,
+    required this.time,
   });
+
+  factory UpcomingMatch.fromJson(Map<String, dynamic> json) {
+    return UpcomingMatch(
+      id: json['id'],
+      leagueId: json['leagueId'] as int?,
+      homeName: json['home']['name'],
+      awayName: json['away']['name'],
+      time: json['time'],
+    );
+  }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:scoore/models/upcoming_match.dart';
 import '../models/live_match.dart';
 
 class SportsService {
@@ -49,6 +50,29 @@ class SportsService {
       return name;
     } else {
       return 'Unknown League';
+    }
+  }
+
+  Future<List<UpcomingMatch>> getUpcomingMatches() async {
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final date =
+        '${tomorrow.year}${tomorrow.month.toString().padLeft(2, '0')}${tomorrow.day.toString().padLeft(2, '0')}';
+
+    final response = await http.get(
+      Uri.parse('https://$_host/football-get-matches-by-date?date=$date'),
+      headers: {
+        'x-rapidapi-key': _apiKey,
+        'x-rapidapi-host': _host,
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final List<dynamic> matches = body['response']['matches'];
+      return matches.map((json) => UpcomingMatch.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed: ${response.statusCode}');
     }
   }
 }
