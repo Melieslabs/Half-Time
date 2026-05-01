@@ -14,7 +14,6 @@ class LiveScoresSection extends StatefulWidget {
 class _LiveScoresSectionState extends State<LiveScoresSection> {
   final SportsService _service = SportsService();
   List<LiveMatch> _matches = [];
-  static final Map<int, String> _leagueNames = {};
   bool _isLoading = true;
   String? _error;
   Timer? _timer;
@@ -23,7 +22,8 @@ class _LiveScoresSectionState extends State<LiveScoresSection> {
   void initState() {
     super.initState();
     _fetch();
-    _timer = Timer.periodic(const Duration(seconds: 30), (_) => _fetch());
+    // Poll every 60 seconds — football-data.org updates every minute
+    _timer = Timer.periodic(const Duration(seconds: 60), (_) => _fetch());
   }
 
   @override
@@ -36,14 +36,6 @@ class _LiveScoresSectionState extends State<LiveScoresSection> {
     setState(() => _isLoading = true);
     try {
       final matches = await _service.getLiveMatches();
-
-      final uniqueIds = matches.map((m) => m.leagueId).whereType<int>().toSet();
-      for (final id in uniqueIds) {
-        if (!_leagueNames.containsKey(id)) {
-          _leagueNames[id] = await _service.getLeagueName(id);
-        }
-      }
-
       setState(() {
         _matches = matches;
         _isLoading = false;
@@ -95,7 +87,9 @@ class _LiveScoresSectionState extends State<LiveScoresSection> {
 
   Widget _buildContent() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.red));
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.red),
+      );
     }
 
     if (_error != null) {
@@ -114,16 +108,7 @@ class _LiveScoresSectionState extends State<LiveScoresSection> {
     }
 
     return Column(
-      children: _matches
-          .map(
-            (m) => LiveScoreCard(
-              match: m,
-              leagueName: m.leagueId != null
-                  ? (_leagueNames[m.leagueId] ?? 'Loading...')
-                  : 'Unknown League',
-            ),
-          )
-          .toList(),
+      children: _matches.map((m) => LiveScoreCard(match: m)).toList(),
     );
   }
 }

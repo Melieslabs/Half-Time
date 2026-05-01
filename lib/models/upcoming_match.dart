@@ -1,25 +1,40 @@
 class UpcomingMatch {
   final int id;
-  final int? leagueId;
-  final String homeName;
-  final String awayName;
-  final String time;
+  final String homeTeam;
+  final String homeCrest;
+  final String homeTla;
+  final String awayTeam;
+  final String awayCrest;
+  final String awayTla;
+  final String utcDate;
+  final String leagueName;
+  final String leagueEmblem;
 
   UpcomingMatch({
     required this.id,
-    required this.leagueId,
-    required this.homeName,
-    required this.awayName,
-    required this.time,
+    required this.homeTeam,
+    required this.homeCrest,
+    required this.homeTla,
+    required this.awayTeam,
+    required this.awayCrest,
+    required this.awayTla,
+    required this.utcDate,
+    required this.leagueName,
+    required this.leagueEmblem,
   });
 
   factory UpcomingMatch.fromJson(Map<String, dynamic> json) {
     return UpcomingMatch(
       id: json['id'],
-      leagueId: json['leagueId'] as int?,
-      homeName: json['home']['name'],
-      awayName: json['away']['name'],
-      time: json['time'],
+      homeTeam: json['homeTeam']['shortName'],
+      homeCrest: json['homeTeam']['crest'],
+      homeTla: json['homeTeam']['tla'],
+      awayTeam: json['awayTeam']['shortName'],
+      awayCrest: json['awayTeam']['crest'],
+      awayTla: json['awayTeam']['tla'],
+      utcDate: json['utcDate'],
+      leagueName: json['competition']['name'],
+      leagueEmblem: json['competition']['emblem'],
     );
   }
 }

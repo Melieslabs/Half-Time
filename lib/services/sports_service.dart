@@ -1,78 +1,87 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:scoore/models/upcoming_match.dart';
 import '../models/live_match.dart';
+import '../models/upcoming_match.dart';
 
 class SportsService {
-  static const String _host = 'free-api-live-football-data.p.rapidapi.com';
-  static const String _apiKey =
-      '8234dca3a6msh3cdc988abc0d150p1d858fjsn92133aa050e4';
+  static const String _baseUrl = 'https://api.football-data.org/v4';
+  static const String _apiKey = 'b816eb49997348fb83dee583ef90c72c ';
 
-  static final Map<int, String> _leagueCache = {};
+  static const _headers = {'X-Auth-Token': _apiKey};
 
   Future<List<LiveMatch>> getLiveMatches() async {
     final response = await http.get(
-      Uri.parse('https://$_host/football-current-live'),
-      headers: {
-        'x-rapidapi-key': _apiKey,
-        'x-rapidapi-host': _host,
-        'Content-Type': 'application/json',
-      },
+      Uri.parse('$_baseUrl/matches?status=IN_PLAY,PAUSED'),
+      headers: _headers,
     );
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      final List<dynamic> live = body['response']['live'];
-      return live.map((json) => LiveMatch.fromJson(json)).toList();
+      final List<dynamic> matches = body['matches'];
+      return matches.map((json) => LiveMatch.fromJson(json)).toList();
     } else {
       throw Exception('Failed: ${response.statusCode}');
     }
   }
 
-  Future<String> getLeagueName(int leagueId) async {
-    if (_leagueCache.containsKey(leagueId)) {
-      return _leagueCache[leagueId]!;
-    }
-
+  Future<Map<String, List<LiveMatch>>> getTodaysMatches() async {
+  try {
     final response = await http.get(
-      Uri.parse('https://$_host/football-get-league-detail?leagueid=$leagueId'),
-      headers: {
-        'x-rapidapi-key': _apiKey,
-        'x-rapidapi-host': _host,
-        'Content-Type': 'application/json',
-      },
-    );
+      Uri.parse('$_baseUrl/matches'),
+      headers: _headers,
+    ).timeout(const Duration(seconds: 30));
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      final String name = body['response']['leagues']['name'];
-      _leagueCache[leagueId] = name;
-      return name;
+      final List<dynamic> matches = body['matches'];
+
+      final allMatches = matches
+          .map((json) => LiveMatch.fromJson(json))
+          .toList();
+
+      final Map<String, List<LiveMatch>> grouped = {};
+      for (final match in allMatches) {
+        grouped.putIfAbsent(match.leagueName, () => []);
+        grouped[match.leagueName]!.add(match);
+      }
+
+      return grouped;
     } else {
-      return 'Unknown League';
+      throw Exception('Failed: ${response.statusCode}');
     }
+  } catch (e) {
+    throw Exception('Error: $e');
   }
+}
 
   Future<List<UpcomingMatch>> getUpcomingMatches() async {
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final date =
-        '${tomorrow.year}${tomorrow.month.toString().padLeft(2, '0')}${tomorrow.day.toString().padLeft(2, '0')}';
+    final competitions = ['PL', 'CL', 'PD', 'SA'];
+    final List<UpcomingMatch> allMatches = [];
 
-    final response = await http.get(
-      Uri.parse('https://$_host/football-get-matches-by-date?date=$date'),
-      headers: {
-        'x-rapidapi-key': _apiKey,
-        'x-rapidapi-host': _host,
-        'Content-Type': 'application/json',
-      },
-    );
+    for (final code in competitions) {
+      try {
+        final response = await http
+            .get(
+              Uri.parse(
+                '$_baseUrl/competitions/$code/matches?status=SCHEDULED',
+              ),
+              headers: _headers,
+            )
+            .timeout(const Duration(seconds: 10));
 
-    if (response.statusCode == 200) {
-      final body = jsonDecode(response.body);
-      final List<dynamic> matches = body['response']['matches'];
-      return matches.map((json) => UpcomingMatch.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed: ${response.statusCode}');
+        if (response.statusCode == 200) {
+          final body = jsonDecode(response.body);
+          final List<dynamic> matches = body['matches'];
+          allMatches.addAll(
+            matches.map((json) => UpcomingMatch.fromJson(json)).toList(),
+          );
+        }
+      } catch (e) {
+        continue;
+      }
     }
+
+    allMatches.sort((a, b) => a.utcDate.compareTo(b.utcDate));
+    return allMatches.take(20).toList();
   }
 }

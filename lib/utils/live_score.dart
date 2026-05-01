@@ -3,15 +3,13 @@ import '../models/live_match.dart';
 
 class LiveScoreCard extends StatelessWidget {
   final LiveMatch match;
-  final String leagueName;
-  const LiveScoreCard({
-    super.key,
-    required this.match,
-    required this.leagueName,
-  });
+  const LiveScoreCard({super.key, required this.match});
 
   @override
   Widget build(BuildContext context) {
+    final isLive = match.status == 'IN_PLAY';
+    final isPaused = match.status == 'PAUSED';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
@@ -21,21 +19,44 @@ class LiveScoreCard extends StatelessWidget {
       ),
       child: Column(
         children: [
+          // League name + status badge
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                leagueName,
-                style: const TextStyle(color: Colors.white54, fontSize: 11),
+              Row(
+                children: [
+                  Image.network(
+                    match.leagueEmblem,
+                    height: 16,
+                    width: 16,
+                    errorBuilder: (_, __, ___) => const SizedBox(width: 16),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    match.leagueName,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: match.finished ? Colors.grey[800] : Colors.red,
+                  color: isLive
+                      ? Colors.red
+                      : isPaused
+                          ? Colors.orange
+                          : Colors.grey[800],
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  match.finished ? 'FT' : 'LIVE ${match.liveTime}',
+                  isLive
+                      ? 'LIVE'
+                      : isPaused
+                          ? 'HT'
+                          : 'FT',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 11,
@@ -48,32 +69,64 @@ class LiveScoreCard extends StatelessWidget {
 
           const SizedBox(height: 12),
 
+          // Teams + score
           Row(
             children: [
+              // Home team
               Expanded(
-                child: Text(
-                  match.homeName,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.network(
+                      match.homeCrest,
+                      height: 24,
+                      width: 24,
+                      errorBuilder: (_, __, ___) => const SizedBox(width: 24),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      match.homeTla,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+
+              // Score
               Text(
-                match.scoreStr,
+                '${match.homeScore ?? 0} - ${match.awayScore ?? 0}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
                 ),
               ),
+
+              // Away team
               Expanded(
-                child: Text(
-                  match.awayName,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      match.awayTla,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Image.network(
+                      match.awayCrest,
+                      height: 24,
+                      width: 24,
+                      errorBuilder: (_, __, ___) => const SizedBox(width: 24),
+                    ),
+                  ],
                 ),
               ),
             ],

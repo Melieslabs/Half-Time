@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scoore/screens/matches_screen.dart';
+import 'package:scoore/screens/settings_screen.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({super.key});
@@ -13,6 +14,17 @@ class _NavBarState extends State<NavBar> {
 
   void onItemTapped(int index) {
     setState(() => _selectedIndex = index);
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MatchesScreen()),
+      ).then((_) => setState(() => _selectedIndex = 0));
+    } else if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SettingsScreen()),
+      ).then((_) => setState(() => _selectedIndex = 0));
+    }
   }
 
   @override
@@ -39,19 +51,11 @@ class _NavBarState extends State<NavBar> {
           label: "Home",
         ),
         BottomNavigationBarItem(
-          icon: GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MatchesScreen()),
-              );
-            },
-            child: Image.asset(
-              'assets/icons/matches_button.png',
-              height: 24,
-              width: 24,
-              color: _selectedIndex == 1 ? Colors.red[400] : Colors.grey,
-            ),
+          icon: Image.asset(
+            'assets/icons/matches_button.png',
+            height: 24,
+            width: 24,
+            color: _selectedIndex == 1 ? Colors.red[400] : Colors.grey,
           ),
           label: "Matches",
         ),
@@ -59,8 +63,8 @@ class _NavBarState extends State<NavBar> {
           icon: Image.asset(
             'assets/icons/setting_button.png',
             height: 24,
-            color: _selectedIndex == 2 ? Colors.red[400] : Colors.grey,
             width: 24,
+            color: _selectedIndex == 2 ? Colors.red[400] : Colors.grey,
           ),
           label: "Settings",
         ),
