@@ -68,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         radius: 30,
                         backgroundColor: Colors.red[900],
                         child: const Text(
-                          'E',
+                          'U',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Emelie',
+                            'User',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 18,
@@ -177,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Switch(
                         value: true,
                         onChanged: (_) {},
-                        activeColor: Colors.red[400],
+                        activeThumbColor: Colors.red[400],
                       ),
                     ],
                   ),

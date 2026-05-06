@@ -5,7 +5,7 @@ import '../models/upcoming_match.dart';
 
 class SportsService {
   static const String _baseUrl = 'https://api.football-data.org/v4';
-  static const String _apiKey = 'b816eb49997348fb83dee583ef90c72c ';
+  static const String _apiKey = 'YOUR_API_KEY_HERE';
 
   static const _headers = {'X-Auth-Token': _apiKey};
 
